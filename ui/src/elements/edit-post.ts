@@ -3,6 +3,7 @@ import {
   HolochainError,
   Record,
   encodeHashToBase64,
+  decodeHashFromBase64,
 } from '@holochain/client';
 import { consume } from '@lit/context';
 import { decode } from '@msgpack/msgpack';
@@ -53,13 +54,15 @@ export class EditPost extends LitElement {
 
   async firstUpdated(props: any) {
     super.firstUpdated(props);
+    const id = this.thing.id;
     // @ts-ignore
     const originalThing = (await this.client.callZome(
       'get_all_revisions_for_thing',
-      this.thing.id
+      id
     )) as Thing[];
+    console.log('uhCkkVDTX2YR315ljZ9YDabVg-mt2UlVdCesr0MjrsilA7VEr1Yn1');
     console.log(originalThing.map(o => [o.content, encodeHashToBase64(o.id)]));
-    this.originalThingHash = originalThing[0].id;
+    // this.originalThingHash = id;
   }
 
   async updatePost() {

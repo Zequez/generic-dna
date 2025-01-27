@@ -1,6 +1,7 @@
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { encodeHashToBase64, type HoloHash } from '@holochain/client';
 
 import './post-detail';
 
@@ -30,8 +31,29 @@ export class AllPosts extends LitElement {
         type: 'Anchor',
         id: 'ALL_POSTS',
       },
-      status => {
+      async status => {
         this.nodeContent = status;
+        if (status.status === 'complete') {
+          const originalThingsIds = status.value.linkedNodeIds.map(
+            n => n.node_id.id
+          ) as HoloHash[];
+          const latestThings = await this.simpleHolochain.getThings(
+            originalThingsIds
+          );
+          console.log(
+            originalThingsIds.map(encodeHashToBase64),
+            latestThings.filter(t => t).map(t => encodeHashToBase64(t!.id))
+          );
+          console.log(
+            'ALL_POSTS',
+            JSON.stringify(
+              status.value.linkedNodeIds.map(n => [
+                encodeHashToBase64(n.node_id.id as HoloHash),
+                n.tag,
+              ])
+            )
+          );
+        }
         this.requestUpdate();
       }
     );

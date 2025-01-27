@@ -80,7 +80,9 @@ export class PostDetail extends LitElement {
   renderDetail(thing: Thing) {
     return html`
       <div style="text-align: right; font-family: monospace">
-        <div><strong>ThingHash:</strong> ${encodeHashToBase64(thing.id)}</div>
+        <div>
+          <strong>ThingHash:</strong> ${encodeHashToBase64(this.thingHash)}
+        </div>
         <div><strong>ThingID:</strong> ${encodeHashToBase64(thing.id)}</div>
       </div>
       <section>
