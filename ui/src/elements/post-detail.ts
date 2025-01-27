@@ -1,4 +1,8 @@
-import { ActionHash, HolochainError } from '@holochain/client';
+import {
+  ActionHash,
+  HolochainError,
+  encodeHashToBase64,
+} from '@holochain/client';
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
@@ -46,7 +50,7 @@ export class PostDetail extends LitElement {
         id: this.thingHash,
       },
       val => {
-        console.log("@post-detail: Got new value: ", val);
+        console.log('@post-detail: Got new value: ', val);
         this.nodeContent = val;
       }
     );
@@ -73,10 +77,12 @@ export class PostDetail extends LitElement {
     }
   }
 
-  renderDetail(nodeContent: NodeStoreContent) {
-    const thing = nodeContent.content.content as Thing;
-
+  renderDetail(thing: Thing) {
     return html`
+      <div style="text-align: right; font-family: monospace">
+        <div><strong>ThingHash:</strong> ${encodeHashToBase64(thing.id)}</div>
+        <div><strong>ThingID:</strong> ${encodeHashToBase64(thing.id)}</div>
+      </div>
       <section>
         <div>
           <span><strong>Content: </strong></span>
@@ -98,27 +104,31 @@ export class PostDetail extends LitElement {
   }
 
   render() {
-    if (this.nodeContent.status === 'error')
+    if (this.nodeContent.status === 'error') {
       return html`<div class="alert">
         Error fetching the Thing: ${this.nodeContent.error}
       </div>`;
-    if (this.nodeContent.status === 'pending')
+    } else if (this.nodeContent.status === 'pending') {
       return html`<progress></progress>`;
-    // if (this._editing) {
-    //   return html`
-    //     <edit-post
-    //       .originalThingHash=${this.thingHash}
-    //       .currentRecord=${record}
-    //       @thing-updated=${async () => {
-    //         this._editing = false;
-    //         await this._fetchRecord.run();
-    //       }}
-    //       @edit-canceled=${() => {
-    //         this._editing = false;
-    //       }}
-    //     ></edit-post>
-    //   `;
-    // }
-    return this.renderDetail(this.nodeContent.value);
+    } else if (this.nodeContent.status === 'complete') {
+      const thing = this.nodeContent.value.content.content as Thing;
+
+      if (this._editing) {
+        return html`
+          <edit-post
+            .originalThingHash=${this.thingHash}
+            .thing=${thing}
+            @thing-updated=${async () => {
+              this._editing = false;
+            }}
+            @edit-canceled=${() => {
+              this._editing = false;
+            }}
+          ></edit-post>
+        `;
+      } else {
+        return this.renderDetail(thing);
+      }
+    }
   }
 }

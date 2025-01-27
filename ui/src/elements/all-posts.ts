@@ -3,7 +3,6 @@ import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import './post-detail';
-import './edit-post';
 
 import { simpleHolochainContext } from '../contexts';
 import {

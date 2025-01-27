@@ -673,7 +673,7 @@ export class SimpleHolochain {
       thing_id: thingId,
       updated_content: updatedContent,
     };
-    return this.callZome("udpate_thing", input);
+    return this.callZome("update_thing", input);
   }
 
   /**
@@ -840,7 +840,7 @@ export class SimpleHolochain {
     return this.callZome("delete_links_from_node", input);
   }
 
-  private callZome(fn_name: string, payload: any) {
+  public callZome(fn_name: string, payload: any) {
     const req: AppCallZomeRequest = {
       role_name: this.roleName,
       zome_name: this.zomeName,
